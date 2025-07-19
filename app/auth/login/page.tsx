@@ -18,10 +18,17 @@ export default function LoginPage() {
     password: "",
   })
   const { login, loading } = useAuth()
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await login(formData.email, formData.password)
+    setError(null)
+    try {
+      await login(formData.email, formData.password)
+      // Optionally redirect here
+    } catch (err: any) {
+      setError(err.message || "Login failed")
+    }
   }
 
   return (
@@ -95,6 +102,9 @@ export default function LoginPage() {
               </Link>
             </div>
 
+            {error && (
+              <div className="text-red-500 text-sm text-center">{error}</div>
+            )}
             {/* Submit Button */}
             <Button type="submit" disabled={loading} className="w-full clay-button-primary group">
               {loading ? "Signing in..." : "Sign In"}

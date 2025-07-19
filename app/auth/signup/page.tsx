@@ -20,14 +20,21 @@ export default function SignupPage() {
     confirmPassword: "",
   })
   const { signup, loading } = useAuth()
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match")
+      setError("Passwords do not match")
       return
     }
-    await signup(formData.name, formData.email, formData.password)
+    try {
+      await signup(formData.name, formData.email, formData.password)
+      // Optionally redirect here
+    } catch (err: any) {
+      setError(err.message || "Signup failed")
+    }
   }
 
   return (
@@ -139,6 +146,9 @@ export default function SignupPage() {
               </span>
             </div>
 
+            {error && (
+              <div className="text-red-500 text-sm text-center">{error}</div>
+            )}
             {/* Submit Button */}
             <Button type="submit" disabled={loading} className="w-full clay-button-primary group">
               {loading ? "Creating account..." : "Create Account"}

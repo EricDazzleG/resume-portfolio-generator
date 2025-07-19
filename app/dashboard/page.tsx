@@ -9,13 +9,27 @@ import DashboardSidebar from "@/components/DashboardSidebar"
 import ResumeCard from "@/components/ResumeCard"
 import PortfolioCard from "@/components/PortfolioCard"
 import { useAuth } from "@/hooks/useAuth"
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
 import { useResumeData } from "@/hooks/useResumeData"
 import { usePortfolioData } from "@/hooks/usePortfolioData"
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("resumes")
   const [searchQuery, setSearchQuery] = useState("")
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/auth/login")
+    }
+  }, [user, loading, router])
+
+  if (loading || !user) {
+    return <div>Loading...</div>
+  }
+
   const { resumes, loading: resumesLoading } = useResumeData()
   const { portfolios, loading: portfoliosLoading } = usePortfolioData()
 
