@@ -42,7 +42,7 @@ const features = [
 
 export default function FeaturesSection() {
   return (
-    <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-transparent to-slate-50/50 dark:to-slate-900/50">
+    <section id="features" className="py-16">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <motion.div

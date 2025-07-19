@@ -36,25 +36,18 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link
-              href="/features"
+            <a
+              href="/#features"
               className="text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium"
             >
               Features
-            </Link>
+            </a>
             <Link
               href="/templates"
               className="text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium"
             >
               Templates
             </Link>
-            <Link
-              href="/pricing"
-              className="text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium"
-            >
-              Pricing
-            </Link>
-
             <Button
               variant="ghost"
               size="sm"
@@ -104,23 +97,17 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             className="md:hidden py-4 space-y-4"
           >
-            <Link
-              href="/features"
+            <a
+              href="/#features"
               className="block text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium"
             >
               Features
-            </Link>
+            </a>
             <Link
               href="/templates"
               className="block text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium"
             >
               Templates
-            </Link>
-            <Link
-              href="/pricing"
-              className="block text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 font-medium"
-            >
-              Pricing
             </Link>
             <div className="flex space-x-4 pt-4">
               {user ? (
