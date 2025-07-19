@@ -5,8 +5,22 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Sparkles, Zap } from "lucide-react"
 import AnimatedBackground from "@/components/AnimatedBackground"
+import { useAuth } from "@/hooks/useAuth"
+import { useRouter } from "next/navigation"
 
 export default function HeroSection() {
+  const { user } = useAuth()
+  const router = useRouter()
+
+  const handleStartBuilding = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (!user) {
+      router.push("/auth/login")
+    } else {
+      router.push("/resume/builder")
+    }
+  }
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
       {/* Professional Header Background */}
@@ -74,12 +88,10 @@ export default function HeroSection() {
               transition={{ delay: 0.5 }}
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12"
             >
-              <Link href="/resume/builder">
-                <Button className="clay-button-primary group px-8 py-4 text-lg">
-                  Start Building
-                  <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
+              <Button className="clay-button-primary group px-8 py-4 text-lg" onClick={handleStartBuilding}>
+                Start Building
+                <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
+              </Button>
 
               <Link href="/portfolio/builder">
                 <Button variant="outline" className="clay-button-secondary bg-transparent px-8 py-4 text-lg">

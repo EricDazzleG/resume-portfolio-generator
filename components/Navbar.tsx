@@ -6,10 +6,12 @@ import { motion } from "framer-motion"
 import { Menu, X, Moon, Sun } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useTheme } from "@/hooks/useTheme"
+import { useAuth } from "@/hooks/useAuth"
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
+  const { user } = useAuth()
 
   return (
     <motion.nav
@@ -62,15 +64,29 @@ export default function Navbar() {
               {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </Button>
 
-            <Link href="/auth/login">
-              <Button variant="ghost" className="clay-button-secondary">
-                Sign In
-              </Button>
-            </Link>
-
-            <Link href="/auth/signup">
-              <Button className="clay-button-primary">Get Started</Button>
-            </Link>
+            {user ? (
+              <div className="flex items-center space-x-3">
+                <div className="w-9 h-9 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+                  <img
+                    src={"/placeholder-user.jpg"}
+                    alt="Profile"
+                    className="w-9 h-9 object-cover"
+                  />
+                </div>
+                <span className="font-medium text-slate-700 dark:text-slate-200">{user.name || user.email}</span>
+              </div>
+            ) : (
+              <>
+                <Link href="/auth/login">
+                  <Button variant="ghost" className="clay-button-secondary">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link href="/auth/signup">
+                  <Button className="clay-button-primary">Get Started</Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -107,14 +123,29 @@ export default function Navbar() {
               Pricing
             </Link>
             <div className="flex space-x-4 pt-4">
-              <Link href="/auth/login">
-                <Button variant="ghost" className="clay-button-secondary">
-                  Sign In
-                </Button>
-              </Link>
-              <Link href="/auth/signup">
-                <Button className="clay-button-primary">Get Started</Button>
-              </Link>
+              {user ? (
+                <div className="flex items-center space-x-3">
+                  <div className="w-9 h-9 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
+                    <img
+                      src={"/placeholder-user.jpg"}
+                      alt="Profile"
+                      className="w-9 h-9 object-cover"
+                    />
+                  </div>
+                  <span className="font-medium text-slate-700 dark:text-slate-200">{user.name || user.email}</span>
+                </div>
+              ) : (
+                <>
+                  <Link href="/auth/login">
+                    <Button variant="ghost" className="clay-button-secondary">
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link href="/auth/signup">
+                    <Button className="clay-button-primary">Get Started</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </motion.div>
         )}
