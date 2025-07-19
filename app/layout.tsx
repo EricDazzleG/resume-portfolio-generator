@@ -3,9 +3,9 @@ import './globals.css'
 import { AuthProvider } from "@/hooks/useAuth"
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+  title: 'resumeforge',
+  description: 'Create and showcase your resume with resumeforge',
+  generator: 'resumeforge',
 }
 
 export default function RootLayout({
