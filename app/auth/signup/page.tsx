@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/hooks/useAuth"
+import { useRouter } from "next/navigation"
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -21,6 +22,7 @@ export default function SignupPage() {
   })
   const { signup, loading } = useAuth()
   const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,7 +33,7 @@ export default function SignupPage() {
     }
     try {
       await signup(formData.name, formData.email, formData.password)
-      // Optionally redirect here
+      router.push("/auth/login")
     } catch (err: any) {
       setError(err.message || "Signup failed")
     }
@@ -163,17 +165,7 @@ export default function SignupPage() {
             <div className="flex-1 border-t border-gray-300 dark:border-gray-600"></div>
           </div>
 
-          {/* Social Login */}
-          <div className="space-y-3">
-            <Button variant="outline" className="w-full clay-button-secondary bg-transparent">
-              <img src="/placeholder.svg?height=20&width=20" alt="Google" className="w-5 h-5 mr-2" />
-              Continue with Google
-            </Button>
-            <Button variant="outline" className="w-full clay-button-secondary bg-transparent">
-              <img src="/placeholder.svg?height=20&width=20" alt="GitHub" className="w-5 h-5 mr-2" />
-              Continue with GitHub
-            </Button>
-          </div>
+          {/* Remove Social Login buttons here */}
 
           {/* Login Link */}
           <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
