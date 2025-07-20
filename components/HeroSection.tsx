@@ -93,7 +93,7 @@ export default function HeroSection() {
                 <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
               </Button>
 
-              <Link href="/portfolio/builder">
+              <Link href="/templates">
                 <Button variant="outline" className="clay-button-secondary bg-transparent px-8 py-4 text-lg">
                   View Templates
                 </Button>
