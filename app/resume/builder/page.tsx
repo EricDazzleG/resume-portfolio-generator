@@ -249,13 +249,15 @@ function ResumeBuilderContent() {
 
       const opt = {
         margin: 0.5,
-        filename: 'my-resume.pdf',
+        filename: `resume-${testData.firstName}-${testData.lastName}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
           scale: 2,
           useCORS: true,
           allowTaint: true,
-          backgroundColor: '#ffffff'
+          backgroundColor: '#ffffff',
+          width: 800,
+          height: 1200
         },
         jsPDF: { 
           unit: 'in', 
@@ -268,8 +270,39 @@ function ResumeBuilderContent() {
       const html2pdfModule = await html2pdf();
       console.log('html2pdf module loaded');
       
-      await html2pdfModule().set(opt).from(tempDiv).save();
-      console.log('PDF generation completed');
+      // Try a different approach - use the element directly
+      const pdf = html2pdfModule().set(opt);
+      console.log('PDF object created');
+      
+      try {
+        const result = await pdf.from(tempDiv).save();
+        console.log('PDF save result:', result);
+        console.log('PDF generation completed successfully');
+      } catch (saveError) {
+        console.log('First method failed, trying alternative approach...');
+        
+        // Alternative approach - try with different options
+        const altOpt = {
+          margin: 1,
+          filename: `resume-${testData.firstName}-${testData.lastName}.pdf`,
+          image: { type: 'jpeg', quality: 0.95 },
+          html2canvas: { 
+            scale: 1,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff'
+          },
+          jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'portrait' 
+          }
+        };
+        
+        const altPdf = html2pdfModule().set(altOpt);
+        await altPdf.from(tempDiv).save();
+        console.log('Alternative PDF generation completed');
+      }
       
       // Clean up
       document.body.removeChild(tempDiv);
