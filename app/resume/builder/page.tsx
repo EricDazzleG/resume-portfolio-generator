@@ -81,84 +81,158 @@ function ResumeBuilderContent() {
           }
         ]
       };
+
+      console.log('Test data being used:', testData);
+
+      // Create a simpler, more reliable PDF content
       const pdfContent = `
-        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto;">
-          <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px;">
-            <h1 style="font-size: 28px; margin: 0; color: #333;">
-              ${testData.firstName} ${testData.lastName}
-            </h1>
-            <div style="margin-top: 10px; color: #666;">
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Resume - ${testData.firstName} ${testData.lastName}</title>
+          <style>
+            body { 
+              font-family: Arial, sans-serif; 
+              margin: 0; 
+              padding: 20px; 
+              background: white; 
+              color: #333;
+            }
+            .header { 
+              text-align: center; 
+              margin-bottom: 30px; 
+              border-bottom: 2px solid #333; 
+              padding-bottom: 20px; 
+            }
+            .header h1 { 
+              font-size: 28px; 
+              margin: 0; 
+              color: #333; 
+            }
+            .contact-info { 
+              margin-top: 10px; 
+              color: #666; 
+            }
+            .section { 
+              margin-bottom: 25px; 
+            }
+            .section h2 { 
+              font-size: 18px; 
+              margin-bottom: 10px; 
+              color: #333; 
+              border-bottom: 1px solid #ccc; 
+              padding-bottom: 5px; 
+            }
+            .experience-item { 
+              margin-bottom: 15px; 
+              padding-left: 15px; 
+              border-left: 3px solid #8b5cf6; 
+            }
+            .experience-header { 
+              display: flex; 
+              justify-content: space-between; 
+              margin-bottom: 5px; 
+            }
+            .experience-title { 
+              font-size: 16px; 
+              font-weight: bold; 
+              color: #333; 
+            }
+            .experience-date { 
+              font-size: 14px; 
+              color: #666; 
+            }
+            .company { 
+              color: #8b5cf6; 
+              font-weight: 500; 
+              margin-bottom: 8px; 
+            }
+            .description { 
+              font-size: 14px; 
+              line-height: 1.5; 
+              color: #555; 
+            }
+            .skills-container { 
+              display: flex; 
+              flex-wrap: wrap; 
+              gap: 8px; 
+            }
+            .skill-tag { 
+              background-color: #f3e8ff; 
+              color: #8b5cf6; 
+              padding: 4px 12px; 
+              border-radius: 15px; 
+              font-size: 12px; 
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>${testData.firstName} ${testData.lastName}</h1>
+            <div class="contact-info">
               <div>${testData.email}</div>
               <div>${testData.phone}</div>
               <div>${testData.location}</div>
             </div>
           </div>
 
-          <div style="margin-bottom: 25px;">
-            <h2 style="font-size: 18px; margin-bottom: 10px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
-              Professional Summary
-            </h2>
-            <p style="margin: 0; line-height: 1.6; color: #555;">${testData.summary}</p>
+          <div class="section">
+            <h2>Professional Summary</h2>
+            <p>${testData.summary}</p>
           </div>
 
-          <div style="margin-bottom: 25px;">
-            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
-              Work Experience
-            </h2>
+          <div class="section">
+            <h2>Work Experience</h2>
             ${testData.experience.map((exp: any) => `
-              <div style="margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #8b5cf6;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                  <h3 style="margin: 0; font-size: 16px; color: #333;">${exp.position}</h3>
-                  <span style="font-size: 14px; color: #666;">${exp.startDate} - ${exp.endDate}</span>
+              <div class="experience-item">
+                <div class="experience-header">
+                  <div class="experience-title">${exp.position}</div>
+                  <div class="experience-date">${exp.startDate} - ${exp.endDate}</div>
                 </div>
-                <div style="color: #8b5cf6; font-weight: 500; margin-bottom: 8px;">${exp.company}</div>
-                <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #555;">${exp.description}</p>
+                <div class="company">${exp.company}</div>
+                <div class="description">${exp.description}</div>
               </div>
             `).join('')}
           </div>
 
-          <div style="margin-bottom: 25px;">
-            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
-              Education
-            </h2>
+          <div class="section">
+            <h2>Education</h2>
             ${testData.education.map((edu: any) => `
-              <div style="margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                  <h3 style="margin: 0; font-size: 16px; color: #333;">${edu.degree} in ${edu.field}</h3>
-                  <span style="font-size: 14px; color: #666;">${edu.graduationDate}</span>
+              <div class="experience-item">
+                <div class="experience-header">
+                  <div class="experience-title">${edu.degree} in ${edu.field}</div>
+                  <div class="experience-date">${edu.graduationDate}</div>
                 </div>
-                <div style="color: #8b5cf6; margin-bottom: 5px;">${edu.school}</div>
+                <div class="company">${edu.school}</div>
               </div>
             `).join('')}
           </div>
 
-          <div style="margin-bottom: 25px;">
-            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
-              Skills
-            </h2>
-            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <div class="section">
+            <h2>Skills</h2>
+            <div class="skills-container">
               ${testData.skills.split(',').map((skill: string) => `
-                <span style="background-color: #f3e8ff; color: #8b5cf6; padding: 4px 12px; border-radius: 15px; font-size: 12px;">
-                  ${skill.trim()}
-                </span>
+                <span class="skill-tag">${skill.trim()}</span>
               `).join('')}
             </div>
           </div>
 
-          <div style="margin-bottom: 25px;">
-            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
-              Projects
-            </h2>
+          <div class="section">
+            <h2>Projects</h2>
             ${testData.projects.map((project: any) => `
-              <div style="margin-bottom: 15px;">
-                <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333;">${project.name}</h3>
-                <div style="color: #8b5cf6; font-size: 14px; margin-bottom: 8px;">${project.technologies}</div>
-                <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #555;">${project.description}</p>
+              <div class="experience-item">
+                <div class="experience-title">${project.name}</div>
+                <div class="company">${project.technologies}</div>
+                <div class="description">${project.description}</div>
               </div>
             `).join('')}
           </div>
-        </div>
+        </body>
+        </html>
       `;
+
+      console.log('PDF content generated:', pdfContent);
 
       // Create temporary element
       const tempDiv = document.createElement('div');
@@ -168,7 +242,10 @@ function ResumeBuilderContent() {
       tempDiv.style.top = '-9999px';
       tempDiv.style.width = '8.5in';
       tempDiv.style.backgroundColor = 'white';
+      tempDiv.style.color = 'black';
       document.body.appendChild(tempDiv);
+
+      console.log('Temporary div created and added to DOM');
 
       const opt = {
         margin: 0.5,
@@ -177,7 +254,8 @@ function ResumeBuilderContent() {
         html2canvas: { 
           scale: 2,
           useCORS: true,
-          allowTaint: true
+          allowTaint: true,
+          backgroundColor: '#ffffff'
         },
         jsPDF: { 
           unit: 'in', 
@@ -186,14 +264,20 @@ function ResumeBuilderContent() {
         }
       };
 
+      console.log('Starting PDF generation...');
       const html2pdfModule = await html2pdf();
+      console.log('html2pdf module loaded');
+      
       await html2pdfModule().set(opt).from(tempDiv).save();
+      console.log('PDF generation completed');
       
       // Clean up
       document.body.removeChild(tempDiv);
+      console.log('Temporary div removed from DOM');
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      alert('Failed to generate PDF. Please try again. Error: ' + errorMessage);
     }
   };
 
