@@ -10,9 +10,10 @@ interface ResumeFormProps {
   step: number
   data: any
   onChange: (data: any) => void
+  onDownload?: () => void
 }
 
-export default function ResumeForm({ step, data, onChange }: ResumeFormProps) {
+export default function ResumeForm({ step, data, onChange, onDownload }: ResumeFormProps) {
   const updateField = (field: string, value: any) => {
     onChange({ ...data, [field]: value })
   }
@@ -421,7 +422,7 @@ export default function ResumeForm({ step, data, onChange }: ResumeFormProps) {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <Button className="clay-button-primary h-16 text-lg">
+            <Button className="clay-button-primary h-16 text-lg" onClick={onDownload}>
               <Download className="w-6 h-6 mr-3" />
               Download PDF
             </Button>
