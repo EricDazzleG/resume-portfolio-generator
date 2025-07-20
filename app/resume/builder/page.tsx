@@ -1,12 +1,15 @@
 "use client";
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
-import { ArrowLeft, ArrowRight, Save, Download, Eye } from "lucide-react"
+import { ArrowLeft, ArrowRight, Save, Download, Eye, Palette } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import ResumeForm from "@/components/ResumeForm"
 import ResumePreview from "@/components/ResumePreview"
 import { useResumeBuilder } from "@/hooks/useResumeBuilder"
+import { getTemplateById } from "@/lib/templates"
+import TemplateSelector from "@/components/TemplateSelector"
 // Dynamic import for html2pdf to avoid SSR issues
 const html2pdf = () => import('html2pdf.js').then(module => module.default);
 
@@ -22,7 +25,17 @@ const steps = [
 export default function ResumeBuilderPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [showPreview, setShowPreview] = useState(false)
+  const [selectedTemplate, setSelectedTemplate] = useState("modern")
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false)
   const { resumeData, updateResumeData, saveResume, loading } = useResumeBuilder()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const templateParam = searchParams.get("template")
+    if (templateParam) {
+      setSelectedTemplate(templateParam)
+    }
+  }, [searchParams])
 
   const progress = (currentStep / steps.length) * 100
 
@@ -226,6 +239,15 @@ export default function ResumeBuilderPage() {
                 Save Draft
               </Button>
 
+              <Button 
+                variant="outline" 
+                className="clay-button-secondary"
+                onClick={() => setShowTemplateSelector(true)}
+              >
+                <Palette className="w-4 h-4 mr-2" />
+                Change Template
+              </Button>
+
               <Button className="clay-button-primary" onClick={downloadResume}>
                 <Download className="w-4 h-4 mr-2" />
                 Download PDF
@@ -299,12 +321,20 @@ export default function ResumeBuilderPage() {
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="sticky top-8">
               <div className="clay-card p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Live Preview</h3>
-                <ResumePreview data={resumeData} />
+                <ResumePreview data={resumeData} template={selectedTemplate} />
               </div>
             </motion.div>
           )}
         </div>
       </div>
+
+      {/* Template Selector Modal */}
+      <TemplateSelector
+        selectedTemplate={selectedTemplate}
+        onTemplateChange={setSelectedTemplate}
+        isOpen={showTemplateSelector}
+        onClose={() => setShowTemplateSelector(false)}
+      />
     </div>
   )
 } 

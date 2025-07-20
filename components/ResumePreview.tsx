@@ -4,9 +4,10 @@ import { motion } from "framer-motion"
 
 interface ResumePreviewProps {
   data: any
+  template?: string
 }
 
-export default function ResumePreview({ data }: ResumePreviewProps) {
+export default function ResumePreview({ data, template = "modern" }: ResumePreviewProps) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
