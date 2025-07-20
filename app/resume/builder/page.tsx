@@ -7,7 +7,8 @@ import { Progress } from "@/components/ui/progress"
 import ResumeForm from "@/components/ResumeForm"
 import ResumePreview from "@/components/ResumePreview"
 import { useResumeBuilder } from "@/hooks/useResumeBuilder"
-import html2pdf from 'html2pdf.js';
+// Dynamic import for html2pdf to avoid SSR issues
+const html2pdf = () => import('html2pdf.js').then(module => module.default);
 
 const steps = [
   { id: 1, title: "Personal Info", description: "Basic information and contact details" },
@@ -25,27 +26,32 @@ export default function ResumeBuilderPage() {
 
   const progress = (currentStep / steps.length) * 100
 
-  const downloadResume = () => {
-    // Create a temporary div to render the resume for PDF
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = document.querySelector('.resume-preview')?.innerHTML || '';
-    tempDiv.style.position = 'absolute';
-    tempDiv.style.left = '-9999px';
-    tempDiv.style.top = '-9999px';
-    document.body.appendChild(tempDiv);
+  const downloadResume = async () => {
+    try {
+      // Create a temporary div to render the resume for PDF
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = document.querySelector('.resume-preview')?.innerHTML || '';
+      tempDiv.style.position = 'absolute';
+      tempDiv.style.left = '-9999px';
+      tempDiv.style.top = '-9999px';
+      document.body.appendChild(tempDiv);
 
-    const opt = {
-      margin: 0.3,
-      filename: 'my-resume.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-    };
+      const opt = {
+        margin: 0.3,
+        filename: 'my-resume.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
 
-    html2pdf().set(opt).from(tempDiv).save().then(() => {
-      // Clean up the temporary div
-      document.body.removeChild(tempDiv);
-    });
+      const html2pdfModule = await html2pdf();
+      html2pdfModule().set(opt).from(tempDiv).save().then(() => {
+        // Clean up the temporary div
+        document.body.removeChild(tempDiv);
+      });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
   };
 
   const handleNext = () => {
