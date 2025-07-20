@@ -84,66 +84,66 @@ function ResumeBuilderContent() {
 
       console.log('Test data being used:', testData);
 
-      // Create a simpler, more reliable PDF content with better alignment
+      // Create a simpler, more reliable PDF content
       const pdfContent = `
-        <div style="font-family: Arial, sans-serif; padding: 40px; background: white; color: #333; width: 100%; max-width: 800px; margin: 0 auto; box-sizing: border-box;">
+        <div style="font-family: Arial, sans-serif; padding: 20px; background: white; color: #333; max-width: 800px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px;">
-            <h1 style="font-size: 32px; margin: 0; color: #333; font-weight: bold;">${testData.firstName} ${testData.lastName}</h1>
-            <div style="margin-top: 15px; color: #666; line-height: 1.5;">
-              <div style="margin-bottom: 5px;">${testData.email}</div>
-              <div style="margin-bottom: 5px;">${testData.phone}</div>
-              <div style="margin-bottom: 5px;">${testData.location}</div>
+            <h1 style="font-size: 28px; margin: 0; color: #333;">${testData.firstName} ${testData.lastName}</h1>
+            <div style="margin-top: 10px; color: #666;">
+              <div>${testData.email}</div>
+              <div>${testData.phone}</div>
+              <div>${testData.location}</div>
             </div>
           </div>
 
-          <div style="margin-bottom: 30px;">
-            <h2 style="font-size: 20px; margin-bottom: 15px; color: #333; border-bottom: 2px solid #8b5cf6; padding-bottom: 8px; font-weight: bold;">Professional Summary</h2>
-            <p style="margin: 0; line-height: 1.6; color: #555; font-size: 14px;">${testData.summary}</p>
+          <div style="margin-bottom: 25px;">
+            <h2 style="font-size: 18px; margin-bottom: 10px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Professional Summary</h2>
+            <p style="margin: 0; line-height: 1.6; color: #555;">${testData.summary}</p>
           </div>
 
-          <div style="margin-bottom: 30px;">
-            <h2 style="font-size: 20px; margin-bottom: 20px; color: #333; border-bottom: 2px solid #8b5cf6; padding-bottom: 8px; font-weight: bold;">Work Experience</h2>
+          <div style="margin-bottom: 25px;">
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Work Experience</h2>
             ${testData.experience.map((exp: any) => `
-              <div style="margin-bottom: 20px; padding-left: 20px; border-left: 4px solid #8b5cf6; background-color: #fafafa; padding: 15px; border-radius: 0 8px 8px 0;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                  <div style="font-size: 18px; font-weight: bold; color: #333;">${exp.position}</div>
-                  <div style="font-size: 14px; color: #666; font-weight: 500;">${exp.startDate} - ${exp.endDate}</div>
+              <div style="margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #8b5cf6;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                  <div style="font-size: 16px; font-weight: bold; color: #333;">${exp.position}</div>
+                  <div style="font-size: 14px; color: #666;">${exp.startDate} - ${exp.endDate}</div>
                 </div>
-                <div style="color: #8b5cf6; font-weight: 600; margin-bottom: 10px; font-size: 16px;">${exp.company}</div>
-                <div style="font-size: 14px; line-height: 1.6; color: #555;">${exp.description}</div>
+                <div style="color: #8b5cf6; font-weight: 500; margin-bottom: 8px;">${exp.company}</div>
+                <div style="font-size: 14px; line-height: 1.5; color: #555;">${exp.description}</div>
               </div>
             `).join('')}
           </div>
 
-          <div style="margin-bottom: 30px;">
-            <h2 style="font-size: 20px; margin-bottom: 20px; color: #333; border-bottom: 2px solid #8b5cf6; padding-bottom: 8px; font-weight: bold;">Education</h2>
+          <div style="margin-bottom: 25px;">
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Education</h2>
             ${testData.education.map((edu: any) => `
-              <div style="margin-bottom: 20px; padding-left: 20px; border-left: 4px solid #8b5cf6; background-color: #fafafa; padding: 15px; border-radius: 0 8px 8px 0;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                  <div style="font-size: 18px; font-weight: bold; color: #333;">${edu.degree} in ${edu.field}</div>
-                  <div style="font-size: 14px; color: #666; font-weight: 500;">${edu.graduationDate}</div>
+              <div style="margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #8b5cf6;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                  <div style="font-size: 16px; font-weight: bold; color: #333;">${edu.degree} in ${edu.field}</div>
+                  <div style="font-size: 14px; color: #666;">${edu.graduationDate}</div>
                 </div>
-                <div style="color: #8b5cf6; font-weight: 600; margin-bottom: 10px; font-size: 16px;">${edu.school}</div>
+                <div style="color: #8b5cf6; font-weight: 500; margin-bottom: 8px;">${edu.school}</div>
               </div>
             `).join('')}
           </div>
 
-          <div style="margin-bottom: 30px;">
-            <h2 style="font-size: 20px; margin-bottom: 20px; color: #333; border-bottom: 2px solid #8b5cf6; padding-bottom: 8px; font-weight: bold;">Skills</h2>
-            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+          <div style="margin-bottom: 25px;">
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Skills</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
               ${testData.skills.split(',').map((skill: string) => `
-                <span style="background-color: #8b5cf6; color: white; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500;">${skill.trim()}</span>
+                <span style="background-color: #f3e8ff; color: #8b5cf6; padding: 4px 12px; border-radius: 15px; font-size: 12px;">${skill.trim()}</span>
               `).join('')}
             </div>
           </div>
 
-          <div style="margin-bottom: 30px;">
-            <h2 style="font-size: 20px; margin-bottom: 20px; color: #333; border-bottom: 2px solid #8b5cf6; padding-bottom: 8px; font-weight: bold;">Projects</h2>
+          <div style="margin-bottom: 25px;">
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Projects</h2>
             ${testData.projects.map((project: any) => `
-              <div style="margin-bottom: 20px; padding-left: 20px; border-left: 4px solid #8b5cf6; background-color: #fafafa; padding: 15px; border-radius: 0 8px 8px 0;">
-                <div style="font-size: 18px; font-weight: bold; color: #333; margin-bottom: 8px;">${project.name}</div>
-                <div style="color: #8b5cf6; font-weight: 600; margin-bottom: 10px; font-size: 16px;">${project.technologies}</div>
-                <div style="font-size: 14px; line-height: 1.6; color: #555;">${project.description}</div>
+              <div style="margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #8b5cf6;">
+                <div style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 5px;">${project.name}</div>
+                <div style="color: #8b5cf6; font-weight: 500; margin-bottom: 8px;">${project.technologies}</div>
+                <div style="font-size: 14px; line-height: 1.5; color: #555;">${project.description}</div>
               </div>
             `).join('')}
           </div>
@@ -152,23 +152,39 @@ function ResumeBuilderContent() {
 
       console.log('PDF content generated:', pdfContent);
 
-      // Create temporary element with better visibility
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = pdfContent;
-      tempDiv.style.position = 'fixed';
-      tempDiv.style.left = '-9999px';
-      tempDiv.style.top = '-9999px';
-      tempDiv.style.width = '800px';
-      tempDiv.style.height = 'auto';
-      tempDiv.style.backgroundColor = 'white';
-      tempDiv.style.color = 'black';
-      tempDiv.style.zIndex = '9999';
-      tempDiv.style.padding = '20px';
-      tempDiv.style.border = '1px solid #ccc';
-      document.body.appendChild(tempDiv);
+      // Try using the existing ResumePreview component
+      const previewContainer = document.querySelector('.resume-preview-container');
+      let tempDiv;
+      
+      if (previewContainer) {
+        // Clone the existing preview
+        tempDiv = previewContainer.cloneNode(true) as HTMLElement;
+        tempDiv.style.position = 'fixed';
+        tempDiv.style.left = '-9999px';
+        tempDiv.style.top = '-9999px';
+        tempDiv.style.width = '800px';
+        tempDiv.style.backgroundColor = 'white';
+        tempDiv.style.color = 'black';
+        tempDiv.style.zIndex = '9999';
+        document.body.appendChild(tempDiv);
+        console.log('Using existing preview component');
+      } else {
+        // Fallback to custom HTML
+        tempDiv = document.createElement('div');
+        tempDiv.innerHTML = pdfContent;
+        tempDiv.style.position = 'fixed';
+        tempDiv.style.left = '-9999px';
+        tempDiv.style.top = '-9999px';
+        tempDiv.style.width = '800px';
+        tempDiv.style.backgroundColor = 'white';
+        tempDiv.style.color = 'black';
+        tempDiv.style.zIndex = '9999';
+        tempDiv.style.padding = '20px';
+        document.body.appendChild(tempDiv);
+        console.log('Using custom HTML fallback');
+      }
 
       console.log('Temporary div created and added to DOM');
-      console.log('Div content:', tempDiv.innerHTML);
       console.log('Div dimensions:', tempDiv.offsetWidth, 'x', tempDiv.offsetHeight);
 
       const opt = {
