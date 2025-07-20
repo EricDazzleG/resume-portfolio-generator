@@ -11,7 +11,7 @@ export default function ResumePreview({ data }: ResumePreviewProps) {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-h-[800px] overflow-y-auto"
+      className="resume-preview bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-h-[800px] overflow-y-auto"
     >
       {/* Header */}
       <div className="text-center mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
