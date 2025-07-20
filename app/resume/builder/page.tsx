@@ -152,52 +152,41 @@ function ResumeBuilderContent() {
 
       console.log('PDF content generated:', pdfContent);
 
-      // Try using the existing ResumePreview component
-      const previewContainer = document.querySelector('.resume-preview-container');
-      let tempDiv;
-      
-      if (previewContainer) {
-        // Clone the existing preview
-        tempDiv = previewContainer.cloneNode(true) as HTMLElement;
-        tempDiv.style.position = 'fixed';
-        tempDiv.style.left = '-9999px';
-        tempDiv.style.top = '-9999px';
-        tempDiv.style.width = '800px';
-        tempDiv.style.backgroundColor = 'white';
-        tempDiv.style.color = 'black';
-        tempDiv.style.zIndex = '9999';
-        document.body.appendChild(tempDiv);
-        console.log('Using existing preview component');
-      } else {
-        // Fallback to custom HTML
-        tempDiv = document.createElement('div');
-        tempDiv.innerHTML = pdfContent;
-        tempDiv.style.position = 'fixed';
-        tempDiv.style.left = '-9999px';
-        tempDiv.style.top = '-9999px';
-        tempDiv.style.width = '800px';
-        tempDiv.style.backgroundColor = 'white';
-        tempDiv.style.color = 'black';
-        tempDiv.style.zIndex = '9999';
-        tempDiv.style.padding = '20px';
-        document.body.appendChild(tempDiv);
-        console.log('Using custom HTML fallback');
-      }
+      // Create a simple, reliable PDF content
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = pdfContent;
+      tempDiv.style.position = 'fixed';
+      tempDiv.style.left = '50px';
+      tempDiv.style.top = '50px';
+      tempDiv.style.width = '800px';
+      tempDiv.style.backgroundColor = 'white';
+      tempDiv.style.color = 'black';
+      tempDiv.style.zIndex = '9999';
+      tempDiv.style.padding = '20px';
+      tempDiv.style.fontFamily = 'Arial, sans-serif';
+      tempDiv.style.fontSize = '14px';
+      tempDiv.style.lineHeight = '1.4';
+      tempDiv.style.border = '2px solid red';
+      document.body.appendChild(tempDiv);
 
+      // Force a reflow to ensure content is rendered
+      tempDiv.offsetHeight;
+      
       console.log('Temporary div created and added to DOM');
       console.log('Div dimensions:', tempDiv.offsetWidth, 'x', tempDiv.offsetHeight);
+      console.log('Div content length:', tempDiv.innerHTML.length);
 
       const opt = {
         margin: 0.5,
         filename: `resume-${testData.firstName}-${testData.lastName}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
-          scale: 2,
+          scale: 1,
           useCORS: true,
           allowTaint: true,
           backgroundColor: '#ffffff',
-          width: 800,
-          height: 1200
+          logging: true,
+          letterRendering: true
         },
         jsPDF: { 
           unit: 'in', 
