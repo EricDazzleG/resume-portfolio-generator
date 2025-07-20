@@ -7,7 +7,8 @@ import { Progress } from "@/components/ui/progress"
 import ResumeForm from "@/components/ResumeForm"
 import ResumePreview from "@/components/ResumePreview"
 import { useResumeBuilder } from "@/hooks/useResumeBuilder"
-import html2pdf from 'html2pdf.js';
+// Dynamic import for html2pdf to avoid SSR issues
+const html2pdf = () => import('html2pdf.js').then(module => module.default);
 
 const steps = [
   { id: 1, title: "Personal Info", description: "Basic information and contact details" },
@@ -25,27 +26,162 @@ export default function ResumeBuilderPage() {
 
   const progress = (currentStep / steps.length) * 100
 
-  const downloadResume = () => {
-    // Create a temporary div to render the resume for PDF
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = document.querySelector('.resume-preview')?.innerHTML || '';
-    tempDiv.style.position = 'absolute';
-    tempDiv.style.left = '-9999px';
-    tempDiv.style.top = '-9999px';
-    document.body.appendChild(tempDiv);
+  const downloadResume = async () => {
+    try {
+      // Debug: Log the resume data
+      console.log('Resume data for PDF:', resumeData);
+      
+      // Create a simple HTML structure for PDF
+      const data = resumeData as any; // Type assertion to avoid TypeScript errors
+      
+      // Add some default data if empty for testing
+      const testData = {
+        firstName: data.firstName || 'John',
+        lastName: data.lastName || 'Doe',
+        email: data.email || 'john.doe@example.com',
+        phone: data.phone || '(555) 123-4567',
+        location: data.location || 'New York, NY',
+        summary: data.summary || 'Experienced software developer with expertise in modern web technologies.',
+        experience: data.experience || [
+          {
+            position: 'Senior Developer',
+            company: 'Tech Corp',
+            startDate: '2020',
+            endDate: 'Present',
+            description: 'Led development of multiple web applications using React and Node.js.'
+          }
+        ],
+        education: data.education || [
+          {
+            degree: 'Bachelor of Science',
+            field: 'Computer Science',
+            school: 'University of Technology',
+            graduationDate: '2019'
+          }
+        ],
+        skills: data.skills || 'JavaScript, React, Node.js, TypeScript, Python',
+        projects: data.projects || [
+          {
+            name: 'E-commerce Platform',
+            technologies: 'React, Node.js, MongoDB',
+            description: 'Built a full-stack e-commerce platform with payment integration.'
+          }
+        ]
+      };
+      const pdfContent = `
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px;">
+            <h1 style="font-size: 28px; margin: 0; color: #333;">
+              ${testData.firstName} ${testData.lastName}
+            </h1>
+            <div style="margin-top: 10px; color: #666;">
+              <div>${testData.email}</div>
+              <div>${testData.phone}</div>
+              <div>${testData.location}</div>
+            </div>
+          </div>
 
-    const opt = {
-      margin: 0.3,
-      filename: 'my-resume.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-    };
+          <div style="margin-bottom: 25px;">
+            <h2 style="font-size: 18px; margin-bottom: 10px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+              Professional Summary
+            </h2>
+            <p style="margin: 0; line-height: 1.6; color: #555;">${testData.summary}</p>
+          </div>
 
-    html2pdf().set(opt).from(tempDiv).save().then(() => {
-      // Clean up the temporary div
+          <div style="margin-bottom: 25px;">
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+              Work Experience
+            </h2>
+            ${testData.experience.map((exp: any) => `
+              <div style="margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #8b5cf6;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                  <h3 style="margin: 0; font-size: 16px; color: #333;">${exp.position}</h3>
+                  <span style="font-size: 14px; color: #666;">${exp.startDate} - ${exp.endDate}</span>
+                </div>
+                <div style="color: #8b5cf6; font-weight: 500; margin-bottom: 8px;">${exp.company}</div>
+                <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #555;">${exp.description}</p>
+              </div>
+            `).join('')}
+          </div>
+
+          <div style="margin-bottom: 25px;">
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+              Education
+            </h2>
+            ${testData.education.map((edu: any) => `
+              <div style="margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                  <h3 style="margin: 0; font-size: 16px; color: #333;">${edu.degree} in ${edu.field}</h3>
+                  <span style="font-size: 14px; color: #666;">${edu.graduationDate}</span>
+                </div>
+                <div style="color: #8b5cf6; margin-bottom: 5px;">${edu.school}</div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div style="margin-bottom: 25px;">
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+              Skills
+            </h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+              ${testData.skills.split(',').map((skill: string) => `
+                <span style="background-color: #f3e8ff; color: #8b5cf6; padding: 4px 12px; border-radius: 15px; font-size: 12px;">
+                  ${skill.trim()}
+                </span>
+              `).join('')}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 25px;">
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+              Projects
+            </h2>
+            ${testData.projects.map((project: any) => `
+              <div style="margin-bottom: 15px;">
+                <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333;">${project.name}</h3>
+                <div style="color: #8b5cf6; font-size: 14px; margin-bottom: 8px;">${project.technologies}</div>
+                <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #555;">${project.description}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      // Create temporary element
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = pdfContent;
+      tempDiv.style.position = 'absolute';
+      tempDiv.style.left = '-9999px';
+      tempDiv.style.top = '-9999px';
+      tempDiv.style.width = '8.5in';
+      tempDiv.style.backgroundColor = 'white';
+      document.body.appendChild(tempDiv);
+
+      const opt = {
+        margin: 0.5,
+        filename: 'my-resume.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          allowTaint: true
+        },
+        jsPDF: { 
+          unit: 'in', 
+          format: 'letter', 
+          orientation: 'portrait' 
+        }
+      };
+
+      const html2pdfModule = await html2pdf();
+      await html2pdfModule().set(opt).from(tempDiv).save();
+      
+      // Clean up
       document.body.removeChild(tempDiv);
-    });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+    }
   };
 
   const handleNext = () => {
