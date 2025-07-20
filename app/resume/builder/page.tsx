@@ -28,29 +28,132 @@ export default function ResumeBuilderPage() {
 
   const downloadResume = async () => {
     try {
-      // Create a temporary div to render the resume for PDF
+      // Create a simple HTML structure for PDF
+      const data = resumeData as any; // Type assertion to avoid TypeScript errors
+      const pdfContent = `
+        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px;">
+            <h1 style="font-size: 28px; margin: 0; color: #333;">
+              ${data.firstName || 'First'} ${data.lastName || 'Last'}
+            </h1>
+            <div style="margin-top: 10px; color: #666;">
+              ${data.email ? `<div>${data.email}</div>` : ''}
+              ${data.phone ? `<div>${data.phone}</div>` : ''}
+              ${data.location ? `<div>${data.location}</div>` : ''}
+            </div>
+          </div>
+
+          ${data.summary ? `
+            <div style="margin-bottom: 25px;">
+              <h2 style="font-size: 18px; margin-bottom: 10px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+                Professional Summary
+              </h2>
+              <p style="margin: 0; line-height: 1.6; color: #555;">${data.summary}</p>
+            </div>
+          ` : ''}
+
+          ${data.experience && data.experience.length > 0 ? `
+            <div style="margin-bottom: 25px;">
+              <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+                Work Experience
+              </h2>
+              ${data.experience.map((exp: any) => `
+                <div style="margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #8b5cf6;">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <h3 style="margin: 0; font-size: 16px; color: #333;">${exp.position || 'Position'}</h3>
+                    <span style="font-size: 14px; color: #666;">${exp.startDate} - ${exp.endDate || 'Present'}</span>
+                  </div>
+                  <div style="color: #8b5cf6; font-weight: 500; margin-bottom: 8px;">${exp.company || 'Company'}</div>
+                  ${exp.description ? `<p style="margin: 0; font-size: 14px; line-height: 1.5; color: #555;">${exp.description}</p>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          ${data.education && data.education.length > 0 ? `
+            <div style="margin-bottom: 25px;">
+              <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+                Education
+              </h2>
+              ${data.education.map((edu: any) => `
+                <div style="margin-bottom: 15px;">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <h3 style="margin: 0; font-size: 16px; color: #333;">${edu.degree || 'Degree'} in ${edu.field || 'Field'}</h3>
+                    <span style="font-size: 14px; color: #666;">${edu.graduationDate}</span>
+                  </div>
+                  <div style="color: #8b5cf6; margin-bottom: 5px;">${edu.school || 'School'}</div>
+                  ${edu.gpa ? `<div style="font-size: 14px; color: #666;">GPA: ${edu.gpa}</div>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          ${data.skills ? `
+            <div style="margin-bottom: 25px;">
+              <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+                Skills
+              </h2>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                ${data.skills.split(',').map((skill: string) => `
+                  <span style="background-color: #f3e8ff; color: #8b5cf6; padding: 4px 12px; border-radius: 15px; font-size: 12px;">
+                    ${skill.trim()}
+                  </span>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          ${data.projects && data.projects.length > 0 ? `
+            <div style="margin-bottom: 25px;">
+              <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+                Projects
+              </h2>
+              ${data.projects.map((project: any) => `
+                <div style="margin-bottom: 15px;">
+                  <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333;">${project.name || 'Project Name'}</h3>
+                  ${project.technologies ? `<div style="color: #8b5cf6; font-size: 14px; margin-bottom: 8px;">${project.technologies}</div>` : ''}
+                  ${project.description ? `<p style="margin: 0; font-size: 14px; line-height: 1.5; color: #555;">${project.description}</p>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `;
+
+      // Create temporary element
       const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = document.querySelector('.resume-preview')?.innerHTML || '';
+      tempDiv.innerHTML = pdfContent;
       tempDiv.style.position = 'absolute';
       tempDiv.style.left = '-9999px';
       tempDiv.style.top = '-9999px';
+      tempDiv.style.width = '8.5in';
+      tempDiv.style.backgroundColor = 'white';
       document.body.appendChild(tempDiv);
 
       const opt = {
-        margin: 0.3,
+        margin: 0.5,
         filename: 'my-resume.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          allowTaint: true
+        },
+        jsPDF: { 
+          unit: 'in', 
+          format: 'letter', 
+          orientation: 'portrait' 
+        }
       };
 
       const html2pdfModule = await html2pdf();
-      html2pdfModule().set(opt).from(tempDiv).save().then(() => {
-        // Clean up the temporary div
-        document.body.removeChild(tempDiv);
-      });
+      await html2pdfModule().set(opt).from(tempDiv).save();
+      
+      // Clean up
+      document.body.removeChild(tempDiv);
     } catch (error) {
       console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
     }
   };
 
