@@ -28,95 +28,122 @@ export default function ResumeBuilderPage() {
 
   const downloadResume = async () => {
     try {
+      // Debug: Log the resume data
+      console.log('Resume data for PDF:', resumeData);
+      
       // Create a simple HTML structure for PDF
       const data = resumeData as any; // Type assertion to avoid TypeScript errors
+      
+      // Add some default data if empty for testing
+      const testData = {
+        firstName: data.firstName || 'John',
+        lastName: data.lastName || 'Doe',
+        email: data.email || 'john.doe@example.com',
+        phone: data.phone || '(555) 123-4567',
+        location: data.location || 'New York, NY',
+        summary: data.summary || 'Experienced software developer with expertise in modern web technologies.',
+        experience: data.experience || [
+          {
+            position: 'Senior Developer',
+            company: 'Tech Corp',
+            startDate: '2020',
+            endDate: 'Present',
+            description: 'Led development of multiple web applications using React and Node.js.'
+          }
+        ],
+        education: data.education || [
+          {
+            degree: 'Bachelor of Science',
+            field: 'Computer Science',
+            school: 'University of Technology',
+            graduationDate: '2019'
+          }
+        ],
+        skills: data.skills || 'JavaScript, React, Node.js, TypeScript, Python',
+        projects: data.projects || [
+          {
+            name: 'E-commerce Platform',
+            technologies: 'React, Node.js, MongoDB',
+            description: 'Built a full-stack e-commerce platform with payment integration.'
+          }
+        ]
+      };
       const pdfContent = `
         <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto;">
           <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px;">
             <h1 style="font-size: 28px; margin: 0; color: #333;">
-              ${data.firstName || 'First'} ${data.lastName || 'Last'}
+              ${testData.firstName} ${testData.lastName}
             </h1>
             <div style="margin-top: 10px; color: #666;">
-              ${data.email ? `<div>${data.email}</div>` : ''}
-              ${data.phone ? `<div>${data.phone}</div>` : ''}
-              ${data.location ? `<div>${data.location}</div>` : ''}
+              <div>${testData.email}</div>
+              <div>${testData.phone}</div>
+              <div>${testData.location}</div>
             </div>
           </div>
 
-          ${data.summary ? `
-            <div style="margin-bottom: 25px;">
-              <h2 style="font-size: 18px; margin-bottom: 10px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
-                Professional Summary
-              </h2>
-              <p style="margin: 0; line-height: 1.6; color: #555;">${data.summary}</p>
-            </div>
-          ` : ''}
+          <div style="margin-bottom: 25px;">
+            <h2 style="font-size: 18px; margin-bottom: 10px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+              Professional Summary
+            </h2>
+            <p style="margin: 0; line-height: 1.6; color: #555;">${testData.summary}</p>
+          </div>
 
-          ${data.experience && data.experience.length > 0 ? `
-            <div style="margin-bottom: 25px;">
-              <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
-                Work Experience
-              </h2>
-              ${data.experience.map((exp: any) => `
-                <div style="margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #8b5cf6;">
-                  <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <h3 style="margin: 0; font-size: 16px; color: #333;">${exp.position || 'Position'}</h3>
-                    <span style="font-size: 14px; color: #666;">${exp.startDate} - ${exp.endDate || 'Present'}</span>
-                  </div>
-                  <div style="color: #8b5cf6; font-weight: 500; margin-bottom: 8px;">${exp.company || 'Company'}</div>
-                  ${exp.description ? `<p style="margin: 0; font-size: 14px; line-height: 1.5; color: #555;">${exp.description}</p>` : ''}
+          <div style="margin-bottom: 25px;">
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+              Work Experience
+            </h2>
+            ${testData.experience.map((exp: any) => `
+              <div style="margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #8b5cf6;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                  <h3 style="margin: 0; font-size: 16px; color: #333;">${exp.position}</h3>
+                  <span style="font-size: 14px; color: #666;">${exp.startDate} - ${exp.endDate}</span>
                 </div>
-              `).join('')}
-            </div>
-          ` : ''}
-
-          ${data.education && data.education.length > 0 ? `
-            <div style="margin-bottom: 25px;">
-              <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
-                Education
-              </h2>
-              ${data.education.map((edu: any) => `
-                <div style="margin-bottom: 15px;">
-                  <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <h3 style="margin: 0; font-size: 16px; color: #333;">${edu.degree || 'Degree'} in ${edu.field || 'Field'}</h3>
-                    <span style="font-size: 14px; color: #666;">${edu.graduationDate}</span>
-                  </div>
-                  <div style="color: #8b5cf6; margin-bottom: 5px;">${edu.school || 'School'}</div>
-                  ${edu.gpa ? `<div style="font-size: 14px; color: #666;">GPA: ${edu.gpa}</div>` : ''}
-                </div>
-              `).join('')}
-            </div>
-          ` : ''}
-
-          ${data.skills ? `
-            <div style="margin-bottom: 25px;">
-              <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
-                Skills
-              </h2>
-              <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                ${data.skills.split(',').map((skill: string) => `
-                  <span style="background-color: #f3e8ff; color: #8b5cf6; padding: 4px 12px; border-radius: 15px; font-size: 12px;">
-                    ${skill.trim()}
-                  </span>
-                `).join('')}
+                <div style="color: #8b5cf6; font-weight: 500; margin-bottom: 8px;">${exp.company}</div>
+                <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #555;">${exp.description}</p>
               </div>
-            </div>
-          ` : ''}
+            `).join('')}
+          </div>
 
-          ${data.projects && data.projects.length > 0 ? `
-            <div style="margin-bottom: 25px;">
-              <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
-                Projects
-              </h2>
-              ${data.projects.map((project: any) => `
-                <div style="margin-bottom: 15px;">
-                  <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333;">${project.name || 'Project Name'}</h3>
-                  ${project.technologies ? `<div style="color: #8b5cf6; font-size: 14px; margin-bottom: 8px;">${project.technologies}</div>` : ''}
-                  ${project.description ? `<p style="margin: 0; font-size: 14px; line-height: 1.5; color: #555;">${project.description}</p>` : ''}
+          <div style="margin-bottom: 25px;">
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+              Education
+            </h2>
+            ${testData.education.map((edu: any) => `
+              <div style="margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                  <h3 style="margin: 0; font-size: 16px; color: #333;">${edu.degree} in ${edu.field}</h3>
+                  <span style="font-size: 14px; color: #666;">${edu.graduationDate}</span>
                 </div>
+                <div style="color: #8b5cf6; margin-bottom: 5px;">${edu.school}</div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div style="margin-bottom: 25px;">
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+              Skills
+            </h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+              ${testData.skills.split(',').map((skill: string) => `
+                <span style="background-color: #f3e8ff; color: #8b5cf6; padding: 4px 12px; border-radius: 15px; font-size: 12px;">
+                  ${skill.trim()}
+                </span>
               `).join('')}
             </div>
-          ` : ''}
+          </div>
+
+          <div style="margin-bottom: 25px;">
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+              Projects
+            </h2>
+            ${testData.projects.map((project: any) => `
+              <div style="margin-bottom: 15px;">
+                <h3 style="margin: 0 0 5px 0; font-size: 16px; color: #333;">${project.name}</h3>
+                <div style="color: #8b5cf6; font-size: 14px; margin-bottom: 8px;">${project.technologies}</div>
+                <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #555;">${project.description}</p>
+              </div>
+            `).join('')}
+          </div>
         </div>
       `;
 
