@@ -13,6 +13,39 @@ import TemplateSelector from "@/components/TemplateSelector"
 // Dynamic import for html2pdf to avoid SSR issues
 const html2pdf = () => import('html2pdf.js').then(module => module.default);
 
+// Alternative PDF generation using jsPDF and html2canvas
+const generatePDFAlternative = async (element: HTMLElement, filename: string) => {
+  const jsPDF = (await import('jspdf')).default;
+  const html2canvas = (await import('html2canvas')).default;
+  
+  const canvas = await html2canvas(element, {
+    scale: 2,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: '#ffffff'
+  });
+  
+  const imgData = canvas.toDataURL('image/png');
+  const pdf = new jsPDF('p', 'mm', 'a4');
+  const imgWidth = 210;
+  const pageHeight = 295;
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  let heightLeft = imgHeight;
+  let position = 0;
+  
+  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+  heightLeft -= pageHeight;
+  
+  while (heightLeft >= 0) {
+    position = heightLeft - imgHeight;
+    pdf.addPage();
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+  }
+  
+  pdf.save(filename);
+};
+
 const steps = [
   { id: 1, title: "Personal Info", description: "Basic information and contact details" },
   { id: 2, title: "Experience", description: "Work history and achievements" },
@@ -84,158 +117,191 @@ function ResumeBuilderContent() {
 
       console.log('Test data being used:', testData);
 
-      // Create a simpler, more reliable PDF content
-      const pdfContent = `
-        <div style="font-family: Arial, sans-serif; padding: 20px; background: white; color: #333; max-width: 800px; margin: 0 auto;">
-          <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px;">
-            <h1 style="font-size: 28px; margin: 0; color: #333;">${testData.firstName} ${testData.lastName}</h1>
-            <div style="margin-top: 10px; color: #666;">
+      // Create a print-friendly HTML document
+      const printContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Resume - ${testData.firstName} ${testData.lastName}</title>
+          <style>
+            @media print {
+              body { margin: 0; padding: 20px; }
+              .no-print { display: none; }
+            }
+            body {
+              font-family: Arial, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              max-width: 800px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 30px;
+              border-bottom: 2px solid #333;
+              padding-bottom: 20px;
+            }
+            .header h1 {
+              font-size: 28px;
+              margin: 0;
+              color: #333;
+            }
+            .contact-info {
+              margin-top: 10px;
+              color: #666;
+            }
+            .section {
+              margin-bottom: 25px;
+            }
+            .section h2 {
+              font-size: 18px;
+              margin-bottom: 10px;
+              color: #333;
+              border-bottom: 1px solid #ccc;
+              padding-bottom: 5px;
+            }
+            .experience-item {
+              margin-bottom: 15px;
+              padding-left: 15px;
+              border-left: 3px solid #8b5cf6;
+            }
+            .experience-header {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 5px;
+            }
+            .experience-title {
+              font-size: 16px;
+              font-weight: bold;
+              color: #333;
+            }
+            .experience-date {
+              font-size: 14px;
+              color: #666;
+            }
+            .company {
+              color: #8b5cf6;
+              font-weight: 500;
+              margin-bottom: 8px;
+            }
+            .description {
+              font-size: 14px;
+              line-height: 1.5;
+              color: #555;
+            }
+            .skills-container {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 8px;
+            }
+            .skill-tag {
+              background-color: #f3e8ff;
+              color: #8b5cf6;
+              padding: 4px 12px;
+              border-radius: 15px;
+              font-size: 12px;
+            }
+            .print-button {
+              position: fixed;
+              top: 20px;
+              right: 20px;
+              padding: 10px 20px;
+              background: #8b5cf6;
+              color: white;
+              border: none;
+              border-radius: 5px;
+              cursor: pointer;
+              font-size: 16px;
+            }
+          </style>
+        </head>
+        <body>
+          <button class="print-button no-print" onclick="window.print()">Print/Save as PDF</button>
+          
+          <div class="header">
+            <h1>${testData.firstName} ${testData.lastName}</h1>
+            <div class="contact-info">
               <div>${testData.email}</div>
               <div>${testData.phone}</div>
               <div>${testData.location}</div>
             </div>
           </div>
 
-          <div style="margin-bottom: 25px;">
-            <h2 style="font-size: 18px; margin-bottom: 10px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Professional Summary</h2>
-            <p style="margin: 0; line-height: 1.6; color: #555;">${testData.summary}</p>
+          <div class="section">
+            <h2>Professional Summary</h2>
+            <p>${testData.summary}</p>
           </div>
 
-          <div style="margin-bottom: 25px;">
-            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Work Experience</h2>
+          <div class="section">
+            <h2>Work Experience</h2>
             ${testData.experience.map((exp: any) => `
-              <div style="margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #8b5cf6;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                  <div style="font-size: 16px; font-weight: bold; color: #333;">${exp.position}</div>
-                  <div style="font-size: 14px; color: #666;">${exp.startDate} - ${exp.endDate}</div>
+              <div class="experience-item">
+                <div class="experience-header">
+                  <div class="experience-title">${exp.position}</div>
+                  <div class="experience-date">${exp.startDate} - ${exp.endDate}</div>
                 </div>
-                <div style="color: #8b5cf6; font-weight: 500; margin-bottom: 8px;">${exp.company}</div>
-                <div style="font-size: 14px; line-height: 1.5; color: #555;">${exp.description}</div>
+                <div class="company">${exp.company}</div>
+                <div class="description">${exp.description}</div>
               </div>
             `).join('')}
           </div>
 
-          <div style="margin-bottom: 25px;">
-            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Education</h2>
+          <div class="section">
+            <h2>Education</h2>
             ${testData.education.map((edu: any) => `
-              <div style="margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #8b5cf6;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                  <div style="font-size: 16px; font-weight: bold; color: #333;">${edu.degree} in ${edu.field}</div>
-                  <div style="font-size: 14px; color: #666;">${edu.graduationDate}</div>
+              <div class="experience-item">
+                <div class="experience-header">
+                  <div class="experience-title">${edu.degree} in ${edu.field}</div>
+                  <div class="experience-date">${edu.graduationDate}</div>
                 </div>
-                <div style="color: #8b5cf6; font-weight: 500; margin-bottom: 8px;">${edu.school}</div>
+                <div class="company">${edu.school}</div>
               </div>
             `).join('')}
           </div>
 
-          <div style="margin-bottom: 25px;">
-            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Skills</h2>
-            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+          <div class="section">
+            <h2>Skills</h2>
+            <div class="skills-container">
               ${testData.skills.split(',').map((skill: string) => `
-                <span style="background-color: #f3e8ff; color: #8b5cf6; padding: 4px 12px; border-radius: 15px; font-size: 12px;">${skill.trim()}</span>
+                <span class="skill-tag">${skill.trim()}</span>
               `).join('')}
             </div>
           </div>
 
-          <div style="margin-bottom: 25px;">
-            <h2 style="font-size: 18px; margin-bottom: 15px; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Projects</h2>
+          <div class="section">
+            <h2>Projects</h2>
             ${testData.projects.map((project: any) => `
-              <div style="margin-bottom: 15px; padding-left: 15px; border-left: 3px solid #8b5cf6;">
-                <div style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 5px;">${project.name}</div>
-                <div style="color: #8b5cf6; font-weight: 500; margin-bottom: 8px;">${project.technologies}</div>
-                <div style="font-size: 14px; line-height: 1.5; color: #555;">${project.description}</div>
+              <div class="experience-item">
+                <div class="experience-title">${project.name}</div>
+                <div class="company">${project.technologies}</div>
+                <div class="description">${project.description}</div>
               </div>
             `).join('')}
           </div>
-        </div>
+        </body>
+        </html>
       `;
 
-      console.log('PDF content generated:', pdfContent);
-
-      // Create a simple, reliable PDF content
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = pdfContent;
-      tempDiv.style.position = 'fixed';
-      tempDiv.style.left = '50px';
-      tempDiv.style.top = '50px';
-      tempDiv.style.width = '800px';
-      tempDiv.style.backgroundColor = 'white';
-      tempDiv.style.color = 'black';
-      tempDiv.style.zIndex = '9999';
-      tempDiv.style.padding = '20px';
-      tempDiv.style.fontFamily = 'Arial, sans-serif';
-      tempDiv.style.fontSize = '14px';
-      tempDiv.style.lineHeight = '1.4';
-      tempDiv.style.border = '2px solid red';
-      document.body.appendChild(tempDiv);
-
-      // Force a reflow to ensure content is rendered
-      tempDiv.offsetHeight;
-      
-      console.log('Temporary div created and added to DOM');
-      console.log('Div dimensions:', tempDiv.offsetWidth, 'x', tempDiv.offsetHeight);
-      console.log('Div content length:', tempDiv.innerHTML.length);
-
-      const opt = {
-        margin: 0.5,
-        filename: `resume-${testData.firstName}-${testData.lastName}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-          scale: 1,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          logging: true,
-          letterRendering: true
-        },
-        jsPDF: { 
-          unit: 'in', 
-          format: 'letter', 
-          orientation: 'portrait' 
-        }
-      };
-
-      console.log('Starting PDF generation...');
-      const html2pdfModule = await html2pdf();
-      console.log('html2pdf module loaded');
-      
-      // Try a different approach - use the element directly
-      const pdf = html2pdfModule().set(opt);
-      console.log('PDF object created');
-      
-      try {
-        const result = await pdf.from(tempDiv).save();
-        console.log('PDF save result:', result);
-        console.log('PDF generation completed successfully');
-      } catch (saveError) {
-        console.log('First method failed, trying alternative approach...');
+      // Open a new window with the print-friendly content
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(printContent);
+        printWindow.document.close();
         
-        // Alternative approach - try with different options
-        const altOpt = {
-          margin: 1,
-          filename: `resume-${testData.firstName}-${testData.lastName}.pdf`,
-          image: { type: 'jpeg', quality: 0.95 },
-          html2canvas: { 
-            scale: 1,
-            useCORS: true,
-            allowTaint: true,
-            backgroundColor: '#ffffff'
-          },
-          jsPDF: { 
-            unit: 'mm', 
-            format: 'a4', 
-            orientation: 'portrait' 
-          }
+        // Wait for content to load, then trigger print
+        printWindow.onload = () => {
+          setTimeout(() => {
+            printWindow.print();
+          }, 500);
         };
         
-        const altPdf = html2pdfModule().set(altOpt);
-        await altPdf.from(tempDiv).save();
-        console.log('Alternative PDF generation completed');
+        console.log('Print window opened successfully');
+      } else {
+        throw new Error('Could not open print window');
       }
       
-      // Clean up
-      document.body.removeChild(tempDiv);
-      console.log('Temporary div removed from DOM');
     } catch (error) {
       console.error('Error generating PDF:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
